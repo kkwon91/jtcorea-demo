@@ -1,4 +1,4 @@
-// JT COREA — 공통 동작(머리 고정 색, 메뉴, 영상 창, 멤버 인사 영상, 나타나기, 굿즈 고르기)
+// JT COREA — 공통 동작(머리 고정 색, 메뉴, 영상 창, 멤버 소개 창, 첫 화면 신호 화면, 나타나기, 굿즈 고르기)
 (function () {
   var doc = document, root = doc.documentElement;
 
@@ -43,26 +43,80 @@
     doc.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
   }
 
-  // 멤버 카드: 올리면(휴대폰은 누르면) 인사 영상
-  var canHover = window.matchMedia('(hover:hover)').matches;
-  doc.querySelectorAll('.mem[data-clip]').forEach(function (card) {
-    var v = card.querySelector('video');
-    function on() {
-      if (!v.src) v.src = card.getAttribute('data-clip');
-      card.classList.add('is-on');
-      var p = v.play(); if (p && p.catch) p.catch(function () {});
-    }
-    function off() { card.classList.remove('is-on'); v.pause(); }
-    if (canHover) {
-      card.addEventListener('mouseenter', on); card.addEventListener('mouseleave', off);
-    } else {
-      card.addEventListener('click', function () {
-        var was = card.classList.contains('is-on');
-        doc.querySelectorAll('.mem.is-on').forEach(function (c) { c.classList.remove('is-on'); var x = c.querySelector('video'); if (x) x.pause(); });
-        if (!was) on();
+  // 멤버 카드: 누르면 소개 화면(아티스트 소개서의 멤버 쪽)
+  var mm = doc.getElementById('memModal');
+  if (mm) {
+    var mmImg = doc.getElementById('mmImg'), mmName = doc.getElementById('mmName'), mmView = doc.getElementById('mmView');
+    var mems = [].slice.call(doc.querySelectorAll('.mem-more[data-mem]')), cur = 0, mmFocus = null;
+    var show = function (i) {
+      cur = (i + mems.length) % mems.length;
+      var b = mems[cur];
+      mmImg.src = 'assets/members/profile/' + b.getAttribute('data-mem') + '.jpg';
+      mmImg.alt = b.getAttribute('data-ko') + ' 소개 화면(아티스트 소개서 2026)';
+      mmName.textContent = b.getAttribute('data-name');
+    };
+    var closeMem = function () { mm.classList.remove('is-open'); if (mmFocus) mmFocus.focus(); };
+    // 휴대폰에서는 그림이 화면보다 넓다 — 인물이 있는 가운데 오른쪽에서 시작
+    mmImg.addEventListener('load', function () { mmView.scrollLeft = (mmView.scrollWidth - mmView.clientWidth) * 0.62; });
+    mems.forEach(function (b, i) {
+      b.addEventListener('click', function () { mmFocus = b; show(i); mm.classList.add('is-open'); doc.getElementById('mmX').focus(); });
+    });
+    doc.getElementById('mmPrev').addEventListener('click', function () { show(cur - 1); });
+    doc.getElementById('mmNext').addEventListener('click', function () { show(cur + 1); });
+    mm.addEventListener('click', function (e) { if (e.target === mm || e.target.id === 'mmX') closeMem(); });
+    doc.addEventListener('keydown', function (e) {
+      if (!mm.classList.contains('is-open')) return;
+      if (e.key === 'Escape') closeMem();
+      else if (e.key === 'ArrowLeft') show(cur - 1);
+      else if (e.key === 'ArrowRight') show(cur + 1);
+    });
+  }
+
+  // 첫 화면 신호 화면: 멤버별 출발지 좌표를 훑고 → 서울 좌표로 맞추고 → 일곱 신호를 연결
+  var sig = doc.getElementById('sig');
+  if (sig && sig.hasAttribute('data-boot')) {
+    if (window.matchMedia('(prefers-reduced-motion:reduce)').matches) sig.removeAttribute('data-boot');
+    else (function () {
+      var city = doc.getElementById('sigCity'), geo = doc.getElementById('sigGeo'), st = doc.getElementById('sigSt');
+      var rows = [].slice.call(sig.querySelectorAll('.sig-rows li'));
+      var lines = [].slice.call(sig.querySelectorAll('.sig-l'));
+      var end = sig.querySelector('.sig-end');
+      var SEOUL = geo.textContent, steps = [];
+      lines.forEach(function (el) { el.setAttribute('data-t', el.textContent); el.textContent = ''; });
+      var wait = function (ms) { steps.push(function (next) { setTimeout(next, ms); }); };
+      var type = function (el) {
+        steps.push(function (next) {
+          var full = el.getAttribute('data-t'), n = 0;
+          el.classList.add('on');
+          (function tick() { n++; el.textContent = full.slice(0, n); if (n < full.length) setTimeout(tick, 16); else next(); })();
+        });
+      };
+      st.textContent = 'SCANNING'; city.textContent = 'ORIGIN'; geo.textContent = '--.----°N ---.----°E';
+      wait(500); type(lines[0]); wait(150);
+      rows.forEach(function (li) {
+        steps.push(function (next) {
+          li.classList.add('on');
+          city.textContent = li.getAttribute('data-city'); geo.textContent = li.getAttribute('data-geo');
+          setTimeout(next, 190);
+        });
       });
-    }
-  });
+      wait(250); type(lines[1]);
+      steps.push(function (next) { // 숫자가 흔들리다 왼쪽부터 서울 좌표로 굳는다
+        var k = 0, N = 18;
+        st.textContent = 'TUNING'; city.textContent = 'SEOUL';
+        (function tick() {
+          k++;
+          var lock = Math.floor(SEOUL.length * k / N);
+          geo.textContent = SEOUL.replace(/\d/g, function (d, i) { return i < lock ? d : String(Math.floor(Math.random() * 10)); });
+          if (k < N) setTimeout(tick, 50); else { geo.textContent = SEOUL; st.textContent = 'LOCKED'; next(); }
+        })();
+      });
+      wait(200); type(lines[2]);
+      rows.forEach(function (li) { steps.push(function (next) { li.classList.add('ok'); setTimeout(next, 70); }); });
+      steps.push(function (next) { end.classList.add('on'); sig.removeAttribute('data-boot'); next(); });
+      (function run(i) { if (i < steps.length) steps[i](function () { run(i + 1); }); })(0);
+    })();
+  }
 
   // 나타나기
   var rv = doc.querySelectorAll('.rv');

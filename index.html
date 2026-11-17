@@ -41,25 +41,45 @@
 
 <!-- 첫 화면 -->
 <section class="hero">
-  <video autoplay muted loop playsinline poster="assets/video/hero_poster.jpg">
-    <source src="assets/video/hero_zzz_perf.mp4" type="video/mp4">
-  </video>
-  <div class="hero-earth" aria-hidden="true">
-    <svg viewBox="0 0 200 200"><defs><path id="ring" d="M100,100 m-84,0 a84,84 0 1,1 168,0 a84,84 0 1,1 -168,0"/></defs><text><textPath href="#ring">ONE CODE · ONE ZiGU · SEVEN MEMBERS · FIVE COUNTRIES · </textPath></text></svg>
-    <img src="assets/stickers/earth.png" alt="">
-  </div>
-  <div class="wrap hero-in">
-    <div class="hero-top">
-      <h1><img class="hero-logo" src="assets/logo/MainLogo_CDZG_fin_Y.png" alt="CODE ZiGU 코드지구" width="1500" height="915"></h1>
-      <p class="hero-meta mono"><b>zzz</b><span>PRE-DEBUT ALBUM</span><span>2026.10.20 발매</span></p>
-    </div>
-    <div class="hero-bot">
-      <p class="hero-copy">서로 다른 국적과 개성의 일곱 멤버가 하나의 코드로 연결되어, 새로운 세계를 만들어 갑니다.</p>
-      <div class="hero-cta">
-        <button class="btn btn--lemon" data-yt="9YGmJm8fgcI"><i>▶</i>퍼포먼스 필름 전체 보기</button>
-        <a class="btn btn--line" href="#members">멤버 보기</a>
+  <div class="hero-stage">
+    <video autoplay muted loop playsinline poster="assets/video/hero_poster.jpg">
+      <source src="assets/video/hero_zzz_perf.mp4" type="video/mp4">
+    </video>
+    <div class="wrap hero-in">
+      <div class="hero-top">
+        <h1><img class="hero-logo" src="assets/logo/MainLogo_CDZG_fin_Y.png" alt="CODE ZiGU 코드지구" width="1500" height="915"></h1>
+        <p class="hero-meta mono"><b>zzz</b><span>PRE-DEBUT ALBUM</span><span>2026.10.20 발매</span></p>
+      </div>
+      <div class="hero-bot">
+        <p class="hero-copy">서로 다른 나라에서 출발한 일곱 멤버가 서울에서 만나 하나의 코드로 연결됐습니다. 2026년 10월 20일, CODE ZiGU라는 이름으로 프리데뷔했습니다.</p>
+        <div class="hero-cta">
+          <button class="btn btn--lemon" data-yt="9YGmJm8fgcI"><i>▶</i>퍼포먼스 필름 전체 보기</button>
+          <a class="btn btn--line" href="#members">멤버 보기</a>
+        </div>
       </div>
     </div>
+  </div>
+  <!-- 신호 화면: 서로 다른 출발지 → 서울 좌표로 맞춤 → 일곱 신호 연결 (아티스트 소개서 2026 표지·멤버 쪽 문구) -->
+  <div class="sig" id="sig" data-boot role="group" aria-label="일곱 멤버의 출발지와 서울 좌표">
+    <div class="hero-earth" aria-hidden="true">
+      <svg viewBox="0 0 200 200"><defs><path id="ring" d="M100,100 m-84,0 a84,84 0 1,1 168,0 a84,84 0 1,1 -168,0"/></defs><text><textPath href="#ring">ONE CODE · ONE ZiGU · SEVEN MEMBERS · FIVE COUNTRIES · </textPath></text></svg>
+      <img src="assets/stickers/earth.png" alt="">
+    </div>
+    <p class="sig-hd"><span>C://CODE_ZiGU</span><span class="sig-st" id="sigSt">LOCKED</span></p>
+    <p class="sig-geo"><b id="sigCity">SEOUL</b> // <span id="sigGeo">37.5665°N 126.9780°E</span></p>
+    <p class="sig-l" data-l>7 signals detected.</p>
+    <ol class="sig-rows">
+      <li data-city="CA, USA" data-geo="36.7783°N 119.4179°W"><span>01</span><b>NATALIE</b><span class="sig-o"><img class="flag" src="assets/flags/us.svg" alt="미국">CA, USA</span><i></i></li>
+      <li data-city="PARIS, FRANCE" data-geo="48.8566°N 2.3522°E"><span>02</span><b>MYA</b><span class="sig-o"><img class="flag" src="assets/flags/fr.svg" alt="프랑스">PARIS, FRANCE</span><i></i></li>
+      <li data-city="SEOUL, KOREA" data-geo="37.5665°N 126.9780°E"><span>03</span><b>YERIN</b><span class="sig-o"><img class="flag" src="assets/flags/kr.svg" alt="한국">SEOUL, KOREA</span><i></i></li>
+      <li data-city="CA, USA" data-geo="36.7783°N 119.4179°W"><span>04</span><b>MALIA</b><span class="sig-o"><img class="flag" src="assets/flags/us.svg" alt="미국">CA, USA</span><i></i></li>
+      <li data-city="ULAANBAATAR, MONGOLIA" data-geo="47.9185°N 106.9177°E"><span>05</span><b>YUNA</b><span class="sig-o"><img class="flag" src="assets/flags/mn.svg" alt="몽골">ULAANBAATAR, MONGOLIA</span><i></i></li>
+      <li data-city="ILSAN, KOREA" data-geo="37.6619°N 126.7761°E"><span>06</span><b>DAEUN</b><span class="sig-o"><img class="flag" src="assets/flags/kr.svg" alt="한국">ILSAN, KOREA</span><i></i></li>
+      <li data-city="PARIS, FRANCE" data-geo="48.8566°N 2.3522°E"><span>07</span><b>ANGELINA</b><span class="sig-o"><img class="flag" src="assets/flags/fr.svg" alt="프랑스">PARIS, FRANCE</span><i></i></li>
+    </ol>
+    <p class="sig-l" data-l>Different origins, one destination.</p>
+    <p class="sig-l" data-l>Connected in Seoul.</p>
+    <p class="sig-end" data-l>07 SIGNALS CONNECTED<br>ONE ZiGU, ONE ORBIT<i class="cur"></i></p>
   </div>
   <div class="mq" aria-hidden="true"><div class="mq-track">
     <span>CODE ZiGU <img src="assets/stickers/star_yellow.png" alt=""> PRE-DEBUT ALBUM ‘zzz’ <img src="assets/stickers/sparkle_pink.png" alt=""> 2026.10.20 OUT NOW <img src="assets/stickers/earth.png" alt=""> 7 MEMBERS · 5 COUNTRIES <img src="assets/stickers/clover_green.png" alt=""> JT COREA <img src="assets/stickers/sparkle_blue.png" alt=""></span>
@@ -94,7 +114,7 @@
     <div class="sec-hd">
       <h2 class="sec-tt">MEMBERS</h2>
       <div>
-        <p class="sec-sub" style="margin-bottom:12px">일곱 멤버, 다섯 나라. 사진에 마우스를 올리거나 누르면 멤버가 직접 인사합니다.</p>
+        <p class="sec-sub" style="margin-bottom:12px">일곱 멤버, 다섯 나라. 카드를 누르면 멤버 소개 화면이 열립니다.</p>
         <p class="flagline">
           <span><img class="flag" src="assets/flags/kr.svg" alt="">한국</span>
           <span><img class="flag" src="assets/flags/us.svg" alt="">미국</span>
@@ -106,10 +126,9 @@
     </div>
 
     <div class="mem-grid">
-      <article class="mem rv" data-clip="assets/members/angelina.mp4">
+      <article class="mem rv">
         <div class="mem-photo">
-          <img src="assets/members/angelina.jpg" alt="안젤리나" loading="lazy" width="608" height="810">
-          <video muted loop playsinline preload="none"></video>
+          <img src="assets/members/angelina.jpg" alt="안젤리나" loading="lazy" width="900" height="1200">
           <span class="mem-no">01</span>
           <span class="mem-flags"><img class="flag" src="assets/flags/fr.svg" alt="프랑스"><img class="flag" src="assets/flags/cn.svg" alt="중국"></span>
           <p class="mem-hi">Hi~ This is Angelina</p>
@@ -119,30 +138,14 @@
           <h3>ANGELINA<span>안젤리나</span></h3>
           <p class="mem-from mono">From Paris, France</p>
           <p class="mem-pick"><b>문화 픽</b> 크렘 브륄레 · 용</p>
+          <p class="mem-foot"><span class="mono">SIGNAL_07</span><button class="mem-more" data-mem="angelina" data-name="ANGELINA" data-ko="안젤리나" aria-label="안젤리나 소개 화면 열기">소개 보기<i aria-hidden="true">+</i></button></p>
         </div>
       </article>
 
-      <article class="mem rv" data-clip="assets/members/yerin.mp4">
+      <article class="mem rv">
         <div class="mem-photo">
-          <img src="assets/members/yerin.jpg" alt="옥예린" loading="lazy" width="608" height="810">
-          <video muted loop playsinline preload="none"></video>
+          <img src="assets/members/yuna.jpg" alt="안유나" loading="lazy" width="900" height="1200">
           <span class="mem-no">02</span>
-          <span class="mem-flags"><img class="flag" src="assets/flags/kr.svg" alt="한국"></span>
-          <p class="mem-hi">안녕~ 옥예린입니다</p>
-        </div>
-        <div class="band"><i style="background:#fff"></i><i style="background:#CD2E3A"></i><i style="background:#0047A0"></i><i style="background:#000"></i></div>
-        <div class="mem-info">
-          <h3>OCK YE RIN<span>옥예린</span></h3>
-          <p class="mem-from mono">From South Korea</p>
-          <p class="mem-pick"><b>문화 픽</b> 떡볶이</p>
-        </div>
-      </article>
-
-      <article class="mem rv" data-clip="assets/members/yuna.mp4">
-        <div class="mem-photo">
-          <img src="assets/members/yuna.jpg" alt="안유나" loading="lazy" width="608" height="810">
-          <video muted loop playsinline preload="none"></video>
-          <span class="mem-no">03</span>
           <span class="mem-flags"><img class="flag" src="assets/flags/mn.svg" alt="몽골"></span>
           <p class="mem-hi">안녕하세요~ 저는 안유나입니다</p>
         </div>
@@ -151,13 +154,29 @@
           <h3>AHN YU NA<span>안유나</span></h3>
           <p class="mem-from mono">From Ulaanbaatar, Mongolia</p>
           <p class="mem-pick"><b>문화 픽</b> 나담 축제</p>
+          <p class="mem-foot"><span class="mono">SIGNAL_05</span><button class="mem-more" data-mem="yuna" data-name="AHN YU NA" data-ko="안유나" aria-label="안유나 소개 화면 열기">소개 보기<i aria-hidden="true">+</i></button></p>
         </div>
       </article>
 
-      <article class="mem rv" data-clip="assets/members/daeun.mp4">
+      <article class="mem rv">
         <div class="mem-photo">
-          <img src="assets/members/daeun.jpg" alt="다은" loading="lazy" width="608" height="810">
-          <video muted loop playsinline preload="none"></video>
+          <img src="assets/members/natalie.jpg" alt="나탈리" loading="lazy" width="900" height="1200">
+          <span class="mem-no">03</span>
+          <span class="mem-flags"><img class="flag" src="assets/flags/us.svg" alt="미국"></span>
+          <p class="mem-hi">Hi, I'm Natalie</p>
+        </div>
+        <div class="band"><i style="background:#B22234"></i><i style="background:#fff"></i><i style="background:#3C3B6E"></i></div>
+        <div class="mem-info">
+          <h3>NATALIE<span>나탈리</span></h3>
+          <p class="mem-from mono">From California, USA</p>
+          <p class="mem-pick"><b>문화 픽</b> 퍼 · 타말레스</p>
+          <p class="mem-foot"><span class="mono">SIGNAL_01</span><button class="mem-more" data-mem="natalie" data-name="NATALIE" data-ko="나탈리" aria-label="나탈리 소개 화면 열기">소개 보기<i aria-hidden="true">+</i></button></p>
+        </div>
+      </article>
+
+      <article class="mem rv">
+        <div class="mem-photo">
+          <img src="assets/members/daeun.jpg" alt="다은" loading="lazy" width="900" height="1200">
           <span class="mem-no">04</span>
           <span class="mem-flags"><img class="flag" src="assets/flags/kr.svg" alt="한국"></span>
           <p class="mem-hi">다은이에요~ 안녕하세요!</p>
@@ -167,29 +186,29 @@
           <h3>DA EUN<span>다은</span></h3>
           <p class="mem-from mono">From South Korea</p>
           <p class="mem-pick"><b>문화 픽</b> 붕어빵</p>
+          <p class="mem-foot"><span class="mono">SIGNAL_06</span><button class="mem-more" data-mem="daeun" data-name="DA EUN" data-ko="다은" aria-label="다은 소개 화면 열기">소개 보기<i aria-hidden="true">+</i></button></p>
         </div>
       </article>
 
-      <article class="mem rv" data-clip="assets/members/malia.mp4">
+      <article class="mem rv">
         <div class="mem-photo">
-          <img src="assets/members/malia.jpg" alt="말리아" loading="lazy" width="608" height="810">
-          <video muted loop playsinline preload="none"></video>
+          <img src="assets/members/yerin.jpg" alt="옥예린" loading="lazy" width="900" height="1200">
           <span class="mem-no">05</span>
-          <span class="mem-flags"><img class="flag" src="assets/flags/us.svg" alt="미국"></span>
-          <p class="mem-hi">Hello, my name is Malia</p>
+          <span class="mem-flags"><img class="flag" src="assets/flags/kr.svg" alt="한국"></span>
+          <p class="mem-hi">안녕~ 옥예린입니다</p>
         </div>
-        <div class="band"><i style="background:#B22234"></i><i style="background:#fff"></i><i style="background:#3C3B6E"></i></div>
+        <div class="band"><i style="background:#fff"></i><i style="background:#CD2E3A"></i><i style="background:#0047A0"></i><i style="background:#000"></i></div>
         <div class="mem-info">
-          <h3>MALIA<span>말리아</span></h3>
-          <p class="mem-from mono">From California, USA</p>
-          <p class="mem-pick"><b>문화 픽</b> 독수리</p>
+          <h3>OCK YE RIN<span>옥예린</span></h3>
+          <p class="mem-from mono">From South Korea</p>
+          <p class="mem-pick"><b>문화 픽</b> 떡볶이</p>
+          <p class="mem-foot"><span class="mono">SIGNAL_03</span><button class="mem-more" data-mem="yerin" data-name="OCK YE RIN" data-ko="옥예린" aria-label="옥예린 소개 화면 열기">소개 보기<i aria-hidden="true">+</i></button></p>
         </div>
       </article>
 
-      <article class="mem rv" data-clip="assets/members/mya.mp4">
+      <article class="mem rv">
         <div class="mem-photo">
-          <img src="assets/members/mya.jpg" alt="미야" loading="lazy" width="608" height="810">
-          <video muted loop playsinline preload="none"></video>
+          <img src="assets/members/mya.jpg" alt="미야" loading="lazy" width="900" height="1200">
           <span class="mem-no">06</span>
           <span class="mem-flags"><img class="flag" src="assets/flags/fr.svg" alt="프랑스"></span>
           <p class="mem-hi">Hi, I'm Mya</p>
@@ -199,22 +218,23 @@
           <h3>MYA<span>미야</span></h3>
           <p class="mem-from mono">From Paris, France</p>
           <p class="mem-pick"><b>문화 픽</b> 축구 · 만두</p>
+          <p class="mem-foot"><span class="mono">SIGNAL_02</span><button class="mem-more" data-mem="mya" data-name="MYA" data-ko="미야" aria-label="미야 소개 화면 열기">소개 보기<i aria-hidden="true">+</i></button></p>
         </div>
       </article>
 
-      <article class="mem rv" data-clip="assets/members/natalie.mp4">
+      <article class="mem rv">
         <div class="mem-photo">
-          <img src="assets/members/natalie.jpg" alt="나탈리" loading="lazy" width="608" height="810">
-          <video muted loop playsinline preload="none"></video>
+          <img src="assets/members/malia.jpg" alt="말리아" loading="lazy" width="900" height="1200">
           <span class="mem-no">07</span>
           <span class="mem-flags"><img class="flag" src="assets/flags/us.svg" alt="미국"></span>
-          <p class="mem-hi">Hi, I'm Natalie</p>
+          <p class="mem-hi">Hello, my name is Malia</p>
         </div>
         <div class="band"><i style="background:#B22234"></i><i style="background:#fff"></i><i style="background:#3C3B6E"></i></div>
         <div class="mem-info">
-          <h3>NATALIE<span>나탈리</span></h3>
+          <h3>MALIA<span>말리아</span></h3>
           <p class="mem-from mono">From California, USA</p>
-          <p class="mem-pick"><b>문화 픽</b> 퍼 · 타말레스</p>
+          <p class="mem-pick"><b>문화 픽</b> 독수리</p>
+          <p class="mem-foot"><span class="mono">SIGNAL_04</span><button class="mem-more" data-mem="malia" data-name="MALIA" data-ko="말리아" aria-label="말리아 소개 화면 열기">소개 보기<i aria-hidden="true">+</i></button></p>
         </div>
       </article>
 
@@ -309,7 +329,7 @@
       <a href="https://www.youtube.com/shorts/ITPmJn8MzHI" target="_blank" rel="noopener"><span class="th"><img src="assets/thumbs/s_ITPmJn8MzHI.jpg" alt="" loading="lazy"></span><span>we are “zzz” Together</span></a>
       <a href="https://www.youtube.com/shorts/VDAu2M6XNRM" target="_blank" rel="noopener"><span class="th"><img src="assets/thumbs/s_VDAu2M6XNRM.jpg" alt="" loading="lazy"></span><span>#zzz #지지지</span></a>
       <a href="https://www.youtube.com/shorts/xucTCtQ4ra8" target="_blank" rel="noopener"><span class="th"><img src="assets/thumbs/s_xucTCtQ4ra8.jpg" alt="" loading="lazy"></span><span>piggyback · Angelina, Natalie</span></a>
-      <a href="https://www.youtube.com/shorts/Ykv4VuLsxnY" target="_blank" rel="noopener"><span class="th"><img src="assets/members/mya.jpg" alt="" loading="lazy"></span><span>Meet All 7 Members</span></a>
+      <a href="https://www.youtube.com/shorts/Ykv4VuLsxnY" target="_blank" rel="noopener"><span class="th"><img src="assets/thumbs/s_Ykv4VuLsxnY.jpg" alt="" loading="lazy"></span><span>Meet All 7 Members</span></a>
     </div>
   </div>
 </section>
@@ -333,6 +353,45 @@
         <p>JT COREA라는 이름에는 ‘하나의 세계를 하나의 가족으로 묶어, 우리(JT)가 새로운 역사를 만든다’는 뜻이 담겨 있습니다.</p>
         <p>놀이 문화에서 출발한 인큐베이팅 시스템으로, 아티스트가 팬과 함께 즐기며 성장하는 환경을 만들고 있습니다.</p>
         <p>아티스트가 스스로 그리는 모습과 방향대로 성공할 수 있도록, 준비하는 길목에서 길잡이가 되는 데 집중합니다. 여러 나라의 문화가 만나는 자리에서 새로운 콘텐츠와 문화를 만들어 갑니다.</p>
+      </div>
+      <div class="ceo rv">
+        <h3><small>CEO</small>이진택</h3>
+        <p>2004년 SM엔터테인먼트 공개채용 1기로 입사해 약 10년간 보아·동방신기·소녀시대·슈퍼주니어 등 주요 아티스트 관련 업무를 맡았습니다. 보아의 일본 활동과 동방신기의 해외 프로모션, 티아라의 일본·미국 콘텐츠 및 음반 업무로 해외 경험을 쌓았습니다.</p>
+        <p>2015년 제이티코리아엔터테인먼트를 설립했고, 글로벌 오디션으로 연습생 33명을 발굴·선발했습니다. 지금은 CODE ZiGU의 제작을 이끌며, 다국적 아티스트의 개성과 세계관을 잇는 콘텐츠와 해외 활동 기반을 만들고 있습니다.</p>
+        <ul>
+          <li><b>2004–2013</b>SM엔터테인먼트</li>
+          <li><b>이후</b>코어콘텐츠미디어 · 스타덤 · 초코엔터테인먼트</li>
+          <li><b>2015–현재</b>JT코리아엔터테인먼트 대표</li>
+        </ul>
+        <p class="ceo-note">캐스팅·앨범 제작·해외 프로모션 분야에서 20년 넘게 일했습니다.</p>
+      </div>
+    </div>
+
+    <div class="aj rv">
+      <div class="aj-hd">
+        <h3>2023년부터 이어 온<br>글로벌 오디션</h3>
+        <p>19개국 20개 도시를 직접 찾아가 지원자를 만났습니다. 이동 거리는 지구 한 바퀴 반이 넘습니다. 5만 명이 넘는 지원자 가운데 13개국 33명과 전속 계약을 맺었고, CODE ZiGU는 이 오디션에서 시작됐습니다.</p>
+      </div>
+      <ul class="aj-nums">
+        <li><b>19<small>개국</small></b><span>오디션을 연 나라 · 20개 도시</span></li>
+        <li><b>6만<small>km+</small></b><span>총 이동 거리</span></li>
+        <li><b>50,000<small>+</small></b><span>전체 지원자</span></li>
+        <li><b>1500<small>:1</small></b><span>최종 경쟁률</span></li>
+        <li><b>33<small>명</small></b><span>전속 계약 · 13개국</span></li>
+      </ul>
+    </div>
+
+    <div class="co-grid co-grid--2">
+      <div class="hist rv">
+        <h3>JT COREA 연혁</h3>
+        <ol>
+          <li><b>2015</b>제이티코리아엔터테인먼트 설립</li>
+          <li><b>2016</b>BAP 월드투어 기획·운영, 걸그룹 오블리스 데뷔(신인상 수상)</li>
+          <li><b>2017</b>중국 MEIPAI 팬 50만 확보, 국내·해외 연습생 트레이닝 시스템 구축</li>
+          <li><b>2023</b>글로벌 오디션 프로젝트 착수, 해외 13개국 오디션 진행</li>
+          <li><b>2024</b>연습생 33명 계약 관련 쇼케이스 진행</li>
+          <li><b>2026</b>글로벌 걸그룹 CODE ZiGU 프리데뷔(10월 20일)</li>
+        </ol>
       </div>
       <div class="prod rv">
         <img src="assets/logo/producer1.jpg" alt="프로듀서 MARCO" loading="lazy" width="370" height="512">
@@ -452,6 +511,19 @@
 
 <div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="영상 재생">
   <div class="modal-box"><button class="modal-x" id="modalX" aria-label="닫기">X</button><div id="modalFrame"></div></div>
+</div>
+
+<div class="modal modal--mem" id="memModal" role="dialog" aria-modal="true" aria-label="멤버 소개 화면">
+  <div class="mm">
+    <div class="mm-bar">
+      <b class="mono" id="mmName"></b>
+      <span class="mm-hint">옆으로 밀어서 보기</span>
+      <button id="mmPrev" aria-label="이전 멤버">←</button>
+      <button id="mmNext" aria-label="다음 멤버">→</button>
+      <button id="mmX" aria-label="닫기">X</button>
+    </div>
+    <div class="mm-view" id="mmView" tabindex="0"><img id="mmImg" alt="" width="1800" height="1013"></div>
+  </div>
 </div>
 
 <script src="js/main.js"></script>
