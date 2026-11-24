@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<title>JT COREA 관리자</title>
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://kkwon91.github.io/jtcorea-demo/admin.html">
+<link rel="icon" href="assets/logo/jt_logo_c.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<header class="ad-hd">
+  <a class="ad-brand" href="index.html"><img src="assets/logo/jt_holo.png" alt="" width="263" height="334">JT COREA<span>관리자</span></a>
+  <div class="ad-me" id="adMe" hidden><span id="adWho"></span><button type="button" id="adOut">로그아웃</button></div>
+</header>
+
+<!-- 로그인 -->
+<main class="ad-login" id="adLogin">
+  <form class="ad-box" id="adForm" autocomplete="on">
+    <h1>관리자 로그인</h1>
+    <p class="ad-sub">오디션 지원서를 보는 화면입니다. 받은 아이디와 비밀번호로 들어옵니다.</p>
+    <label>아이디<input type="text" name="id" autocomplete="username" autocapitalize="off" required></label>
+    <label>비밀번호<input type="password" name="pw" autocomplete="current-password" required></label>
+    <p class="ad-msg" id="adMsg" role="alert" hidden></p>
+    <button type="submit" id="adGo">로그인</button>
+  </form>
+</main>
+
+<!-- 지원서 -->
+<main class="ad-main" id="adMain" hidden>
+  <div class="ad-top">
+    <div>
+      <h1>오디션 지원서</h1>
+      <p class="ad-sub" id="adSum"></p>
+    </div>
+    <div class="ad-acts">
+      <button type="button" id="adReload">새로 고침</button>
+      <button type="button" id="adCsv">표로 내려받기(CSV)</button>
+    </div>
+  </div>
+
+  <div class="ad-bar">
+    <div class="ad-tabs" id="adTabs" role="group" aria-label="상태로 고르기"></div>
+    <div class="ad-tabs ad-tabs--cat" id="adCats" role="group" aria-label="분야로 고르기"></div>
+    <label class="ad-find"><span>찾기</span><input type="search" id="adQ" placeholder="이름 · 국적 · 접수 번호"></label>
+  </div>
+
+  <div class="ad-split">
+    <section class="ad-list" aria-label="지원서 목록">
+      <table>
+        <thead><tr><th>접수</th><th>이름</th><th>생년월일</th><th>국적 · 사는 곳</th><th>분야</th><th>상태</th></tr></thead>
+        <tbody id="adRows"></tbody>
+      </table>
+      <p class="ad-empty" id="adEmpty" hidden></p>
+    </section>
+    <aside class="ad-det" id="adDet" aria-label="지원서 한 건" hidden></aside>
+  </div>
+</main>
+
+<script src="js/admin.js"></script>
+</body>
+</html>

@@ -126,3 +126,10 @@
   .ap-ring{right:-24%;top:auto;bottom:-30%;opacity:.55}
   .ap-send .btn{width:100%;justify-content:center}
 }
+
+/* 보내는 중 */
+.ap-prog{width:100%;border:1.5px solid #fff;padding:14px 16px;background:#0a0a0a}
+.ap-prog p{margin:0 0 10px;font-size:13px;color:#fff}
+.ap-bar{display:block;height:10px;border:1.5px solid #fff;background:#000}
+.ap-bar i{display:block;height:100%;width:0;background:var(--lemon);transition:width .2s linear}
+.ap-send .btn[disabled]{opacity:.45;cursor:default;pointer-events:none}

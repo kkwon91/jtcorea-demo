@@ -203,9 +203,41 @@
     apply();
   }
 
-  // 오디션 지원서(시안): 빠진 칸을 짚어 주고, 보내기를 눌러도 아무 데도 전송하지 않는다
+  // 오디션 지원서: 빠진 칸을 짚어 주고, 접수 서버가 켜져 있으면 글 → 사진·영상(조각) → 끝맺음 순서로 보낸다.
+  //   접수 서버에 이 사이트가 없거나 답이 없으면 시안 화면 그대로(아무 데도 전송하지 않음).
   var form = doc.getElementById('apForm');
   if (form) {
+    var OPS = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) ? 'http://127.0.0.1:8798/' : 'https://ops.dbartera.com/';
+    var OPS_SITE = 'jtcorea';
+    var official = /(^|\.)jtcoreaent\.com$/.test(location.hostname); // 공식 주소가 아니면 시험 접수로 표시
+    var live = false, sending = false;
+    var post = function (o) { return fetch(OPS, { method: 'POST', headers: { 'content-type': 'text/plain' }, body: JSON.stringify(o) }).then(function (r) { return r.json(); }); };
+    fetch(OPS + '?a=status&site=' + OPS_SITE).then(function (r) { return r.json(); }).then(function (j) {
+      if (!j.ok || j.status !== 'active') return;
+      live = true;
+      [].forEach.call(doc.querySelectorAll('.ap-demo[data-demo]'), function (x) { x.hidden = true; });
+      if (!official) doc.getElementById('apTest').hidden = false;
+    }).catch(function () {});
+    // 올릴 수 있는 파일(서버와 같은 기준): 칸 → [개수, 한 개 최대 MB]
+    var EXT = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp', heic: 'image/heic', heif: 'image/heif', mp4: 'video/mp4', mov: 'video/quicktime', webm: 'video/webm', m4v: 'video/x-m4v' };
+    var LIM = { intro: [1, 500], face: [1, 30], body: [1, 30], skill: [3, 500] };
+    var typeOf = function (f) {
+      var t = (f.type || '').toLowerCase(), k;
+      for (k in EXT) if (EXT[k] === t) return t;
+      var m = /\.([a-z0-9]+)$/i.exec(f.name);
+      return (m && EXT[m[1].toLowerCase()]) || '';
+    };
+    var fileWhy = function (el) {
+      var lim = LIM[el.name], img = el.name === 'face' || el.name === 'body', i, f, t;
+      if (!lim || !el.files.length) return '';
+      if (el.files.length > lim[0]) return '영상은 ' + lim[0] + '개까지 올릴 수 있습니다.';
+      for (i = 0; i < el.files.length; i++) {
+        f = el.files[i]; t = typeOf(f);
+        if (!t || (t.indexOf('image/') === 0) !== img) return img ? '사진은 JPG·PNG·WEBP·HEIC 파일로 올려 주세요.' : '영상은 MP4·MOV·WEBM 파일로 올려 주세요.';
+        if (f.size > lim[1] * 1048576) return img ? '사진은 한 장에 ' + lim[1] + 'MB까지 올릴 수 있습니다.' : '영상은 한 개에 ' + lim[1] + 'MB까지 올릴 수 있습니다.';
+      }
+      return '';
+    };
     var sets = [].slice.call(form.querySelectorAll('.ap-fs'));
     var steps = [].slice.call(doc.querySelectorAll('#apSteps li'));
     var err = doc.getElementById('apErr'), done = doc.getElementById('apDone');
@@ -215,6 +247,7 @@
       okRule: '주의사항 확인에 표시해 주세요.', okPrivacy: '개인정보 수집·이용 동의에 표시해 주세요.', okGuardian: '보호자 동의에 표시해 주세요.' };
     var why = function (el) {
       var v = el.validity;
+      if (v.customError) return el.validationMessage;
       if (el.name === 'birth' && (v.rangeUnderflow || v.rangeOverflow)) return '2010년생부터 2013년생까지 지원할 수 있습니다.';
       if (el.name === 'email' && v.typeMismatch) return '이메일 주소 형식을 확인해 주세요.';
       return MSG[el.name] || '이 칸을 채워 주세요.';
@@ -238,7 +271,8 @@
       var el = e.target;
       clear(el);
       if (el.name === 'category') el.closest('.ap-cat').classList.remove('is-err');
-      if (el.type === 'file') {  // 고른 파일 이름만 화면에 보여 준다(전송 없음)
+      if (el.type === 'file') {  // 고른 파일 이름을 보여 주고, 형식·크기를 미리 본다
+        el.setCustomValidity(fileWhy(el));
         var up = el.closest('.up'), st = up.querySelector('.up-s'), fl = el.files;
         up.classList.toggle('has', fl.length > 0);
         st.textContent = '';
@@ -279,10 +313,70 @@
         return;
       }
       err.hidden = true;
-      form.hidden = true; done.hidden = false;
-      done.focus(); done.scrollIntoView({ block: 'start' });
+      if (!live) {  // 시안: 전송 없이 다음 화면만 보여 준다
+        form.hidden = true; done.hidden = false;
+        done.focus(); done.scrollIntoView({ block: 'start' });
+        return;
+      }
+      if (!sending) send();
     });
+    var btn = form.querySelector('button[type=submit]'), prog = doc.getElementById('apProg'), progT = doc.getElementById('apProgT'), bar = doc.getElementById('apBar');
+    var FAIL = { busy: '지금은 접수가 몰려 있습니다. 잠시 뒤 다시 보내 주세요.', full: '지금은 파일을 받을 수 없습니다. 아래 오디션 문의 메일로 알려 주세요.', closed: '지금은 지원서를 받지 않습니다.',
+      type: '사진·영상 파일 형식을 확인해 주세요.', size: '사진·영상 파일 크기를 확인해 주세요.', invalid: '적은 내용을 다시 확인해 주세요.' };
+    var send = function () {
+      var data = { category: [], test: official ? 0 : 1, page: location.pathname.slice(-60) }, list = [], total = 0, sent = 0, id, key, chunk;
+      ['name', 'birth', 'nationality', 'residence', 'email', 'contact', 'guardian', 'guardianContact'].forEach(function (k) { data[k] = form.elements[k].value.trim(); });
+      [].forEach.call(form.querySelectorAll('[name=category]:checked'), function (c) { data.category.push(c.value); });
+      var g = form.querySelector('[name=gender]:checked'); if (g) data.gender = g.value;
+      ['okRule', 'okPrivacy', 'okGuardian'].forEach(function (k) { data[k] = form.elements[k].checked; });
+      ['intro', 'face', 'body', 'skill'].forEach(function (k) { [].forEach.call(form.elements[k].files, function (f, i) { list.push({ k: k, i: i, f: f }); total += f.size; }); });
+      var paint = function (label) {
+        var pct = total ? Math.min(100, Math.floor(sent / total * 100)) : 0;
+        progT.textContent = label || ('사진·영상을 올리는 중입니다 · ' + pct + '% · 이 화면을 닫지 말아 주세요');
+        bar.style.width = pct + '%';
+      };
+      var wait = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
+      var sendFile = function (x) {
+        var off = 0, tries = 0;
+        var step = function () {
+          if (off >= x.f.size) return Promise.resolve();
+          var u = OPS + 'up?site=' + OPS_SITE + '&id=' + id + '&key=' + encodeURIComponent(key) + '&k=' + x.k + '&i=' + x.i + '&off=' + off;
+          return fetch(u, { method: 'POST', headers: { 'content-type': 'application/octet-stream' }, body: x.f.slice(off, Math.min(x.f.size, off + chunk)) })
+            .then(function (r) { return r.json(); })
+            .then(function (j) {
+              if (j.ok || (j.err === 'offset' && tries++ < 5)) { sent += j.size - off; off = j.size; if (j.ok) tries = 0; paint(); return step(); }
+              throw j;
+            }, function (e) { if (tries++ < 4) return wait(1500 * tries).then(step); throw e; });  // 끊기면 잠시 뒤 같은 자리부터 다시
+        };
+        return step();
+      };
+      sending = true; btn.disabled = true; prog.hidden = false; err.hidden = true; paint('지원서를 보내는 중입니다');
+      post({ a: 'apply', site: OPS_SITE, data: data, files: list.map(function (x) { return { k: x.k, name: x.f.name, type: typeOf(x.f), size: x.f.size }; }) })
+        .then(function (j) {
+          if (!j.ok) throw j;
+          id = j.id; key = j.key; chunk = j.chunk; paint();
+          return list.reduce(function (p, x) { return p.then(function () { return sendFile(x); }); }, Promise.resolve());
+        })
+        .then(function () { paint('마무리하는 중입니다'); return post({ a: 'applyDone', site: OPS_SITE, id: id, key: key }); })
+        .then(function (j) {  // 서버가 저장했다고 답한 뒤에만 접수 안내를 보여 준다
+          if (!j.ok) throw j;
+          sending = false; prog.hidden = true;
+          doc.getElementById('apDoneT').textContent = '지원서를 받았습니다';
+          doc.getElementById('apDoneP').textContent = '접수 번호는 ' + j.id + '입니다. 결과는 개별로 연락드립니다.' + (official ? '' : ' 지금은 시험 운영 중이라 이 지원서는 시험용으로만 저장됩니다.');
+          doc.getElementById('apBack').textContent = 'JT COREA 홈으로';
+          form.reset(); sync(); form.hidden = true; done.hidden = false;
+          done.focus({ preventScroll: true }); done.scrollIntoView({ block: 'center' });
+        })
+        .catch(function (e) {
+          sending = false; btn.disabled = false; prog.hidden = true;
+          err.hidden = false;
+          err.textContent = (e && FAIL[e.err]) || '지원서를 보내지 못했습니다. 인터넷 연결을 확인하고 다시 보내 주세요. 적은 내용은 그대로 남아 있습니다.';
+          err.scrollIntoView({ block: 'center' });
+        });
+    };
+    window.addEventListener('beforeunload', function (e) { if (sending) { e.preventDefault(); e.returnValue = ''; } });
     doc.getElementById('apBack').addEventListener('click', function () {
+      if (live) { location.href = 'index.html'; return; }
       done.hidden = true; form.hidden = false; form.scrollIntoView({ block: 'start' });
     });
     sync();

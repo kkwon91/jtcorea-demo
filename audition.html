@@ -40,8 +40,9 @@
 
 <main>
 
-<!-- 시안 안내: 접수 서버를 붙이면 이 띠를 뺀다 -->
+<!-- 접수 서버가 켜져 있으면 js 가 시안 띠를 숨기고, 공식 주소가 아닐 때는 시험 접수 띠를 보여 준다 -->
 <p class="ap-demo" data-demo><b>시안 화면</b>접수 서버를 연결하기 전이라 지원서가 아직 저장되지 않습니다. 연결되면 이 화면에서 바로 접수합니다.</p>
+<p class="ap-demo" id="apTest" hidden><b>시험 접수</b>지금은 시험 운영 중입니다. 여기서 보낸 지원서는 시험용으로만 저장하고 실제 접수로 다루지 않습니다.</p>
 
 <section class="ap-hero">
   <img class="ap-ring" src="assets/stickers/ring.png" alt="" aria-hidden="true">
@@ -146,7 +147,7 @@
           <span class="up-t">지원 분야 영상<em>Category video</em></span>
           <span class="up-s" data-empty="영상 파일 고르기">영상 파일 고르기</span></label>
       </div>
-      <p class="ap-note">보컬·랩은 1분 30초 안팎의 무반주 영상, 댄스는 1분 30초 안팎의 영상입니다.</p>
+      <p class="ap-note">보컬·랩은 1분 30초 안팎의 무반주 영상, 댄스는 1분 30초 안팎의 영상입니다. 사진은 한 장에 30MB, 영상은 한 개에 500MB까지 올릴 수 있고, 지원 분야 영상은 3개까지입니다.</p>
     </fieldset>
 
     <fieldset class="ap-fs" id="s5">
@@ -163,16 +164,17 @@
 
     <div class="ap-send">
       <p class="ap-err" id="apErr" role="alert" hidden></p>
+      <div class="ap-prog" id="apProg" role="status" hidden><p id="apProgT"></p><span class="ap-bar"><i id="apBar"></i></span></div>
       <button class="btn btn--lemon" type="submit">지원서 보내기<i>→</i></button>
       <span>보내기 전에 빠진 칸이 없는지 한 번 더 확인합니다.</span>
     </div>
   </form>
 
-  <!-- 보낸 뒤 화면(시안): 서버를 붙이면 접수 번호와 안내로 바꾼다 -->
+  <!-- 보낸 뒤 화면: 기본 글은 시안용, 실제로 접수되면 js 가 접수 번호 안내로 바꾼다 -->
   <section class="ap-done" id="apDone" tabindex="-1" hidden>
     <img src="assets/stickers/star_yellow.png" alt="" aria-hidden="true">
-    <h2>여기까지가 지원서 화면 시안입니다</h2>
-    <p>접수 서버를 아직 연결하지 않아, 방금 적은 내용과 고른 파일은 어디에도 전송되거나 저장되지 않았습니다. 실제 접수가 열리면 이 자리에 접수 완료 안내가 나옵니다.</p>
+    <h2 id="apDoneT">여기까지가 지원서 화면 시안입니다</h2>
+    <p id="apDoneP">접수 서버를 아직 연결하지 않아, 방금 적은 내용과 고른 파일은 어디에도 전송되거나 저장되지 않았습니다. 실제 접수가 열리면 이 자리에 접수 완료 안내가 나옵니다.</p>
     <div class="ap-done-cta">
       <button class="btn btn--lemon" type="button" id="apBack">지원서로 돌아가기</button>
     </div>
