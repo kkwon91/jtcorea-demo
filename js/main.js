@@ -207,7 +207,7 @@
   //   접수 서버에 이 사이트가 없거나 답이 없으면 시안 화면 그대로(아무 데도 전송하지 않음).
   var form = doc.getElementById('apForm');
   if (form) {
-    var OPS = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) ? 'http://127.0.0.1:8798/' : 'https://ops.dbartera.com/';
+    var OPS = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) ? 'http://127.0.0.1:8798/' : 'https://jtops.dbartera.com/';
     var OPS_SITE = 'jtcorea';
     var official = /(^|\.)jtcoreaent\.com$/.test(location.hostname);
     // 공식 주소에서 실제 접수를 여는 스위치. 개인정보 보관 기간·보호자 동의 방식이 정해지고 화면 문구를 채운 뒤에 true 로 바꾼다.

@@ -3,7 +3,7 @@
 (function () {
   'use strict';
   var doc = document;
-  var OPS = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) ? 'http://127.0.0.1:8798/' : 'https://ops.dbartera.com/';
+  var OPS = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) ? 'http://127.0.0.1:8798/' : 'https://jtops.dbartera.com/';
   var SITE = 'jtcorea';
   var KEY = 'jtadm';
   var $ = function (id) { return doc.getElementById(id); };
