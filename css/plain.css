@@ -1,0 +1,12 @@
+/* 글만 있는 작은 화면(없는 주소 안내·이메일무단수집거부) */
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;min-height:100vh;display:grid;place-items:center;padding:32px 20px;background:#0A0A0A;color:#fff;font:15px/1.7 "Pretendard Variable",Pretendard,system-ui,sans-serif;word-break:keep-all}
+.pl{width:min(560px,100%)}
+.pl-brand{display:inline-flex;align-items:center;gap:10px;color:#fff;text-decoration:none;font-weight:800;font-size:15px;letter-spacing:.01em}
+.pl-brand img{width:24px;height:auto}
+.pl h1{margin:36px 0 14px;font-size:clamp(26px,5vw,38px);font-weight:800;letter-spacing:-.02em;line-height:1.25;color:#FFFF7D}
+.pl p{margin:0;color:#D9D9D2}
+.pl-go{display:inline-block;margin-top:30px;padding:13px 20px;background:#FFFF7D;color:#000;border:1.5px solid #000;box-shadow:4px 4px 0 #fff;font-weight:800;font-size:14px;text-decoration:none}
+.pl-go:hover{background:#fff}
+.pl-go:focus-visible,.pl-brand:focus-visible{outline:3px solid #FFFF7D;outline-offset:3px}

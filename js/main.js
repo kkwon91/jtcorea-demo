@@ -209,15 +209,31 @@
   if (form) {
     var OPS = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) ? 'http://127.0.0.1:8798/' : 'https://ops.dbartera.com/';
     var OPS_SITE = 'jtcorea';
-    var official = /(^|\.)jtcoreaent\.com$/.test(location.hostname); // 공식 주소가 아니면 시험 접수로 표시
+    var official = /(^|\.)jtcoreaent\.com$/.test(location.hostname);
+    // 공식 주소에서 실제 접수를 여는 스위치. 개인정보 보관 기간·보호자 동의 방식이 정해지고 화면 문구를 채운 뒤에 true 로 바꾼다.
+    var OPEN = false;
+    // 시험 접수: 공식 주소가 아닌 곳, 또는 공식 주소에 ?test=1 을 붙여 연 경우. 보낸 지원서는 '시험'으로 표시된다.
+    var testMode = !official || /[?&]test=1(&|$)/.test(location.search);
     var live = false, sending = false;
     var post = function (o) { return fetch(OPS, { method: 'POST', headers: { 'content-type': 'text/plain' }, body: JSON.stringify(o) }).then(function (r) { return r.json(); }); };
-    fetch(OPS + '?a=status&site=' + OPS_SITE).then(function (r) { return r.json(); }).then(function (j) {
-      if (!j.ok || j.status !== 'active') return;
-      live = true;
+    // 공식 주소에서는 시안 화면을 보이지 않는다: 접수 서버가 받을 수 있으면 지원서, 아니면 '준비 중' 안내와 지원 폼 연결.
+    var wait = function (on) {
+      if (!official) return;
       [].forEach.call(doc.querySelectorAll('.ap-demo[data-demo]'), function (x) { x.hidden = true; });
-      if (!official) doc.getElementById('apTest').hidden = false;
-    }).catch(function () {});
+      doc.getElementById('apPrep').hidden = !on; doc.getElementById('apWait').hidden = !on; form.hidden = true;
+      var steps = doc.querySelector('.ap-side ol, aside ol'); if (steps) steps.hidden = on; // 칸이 안 보일 때는 단계 목록도 숨긴다
+    };
+    if (official) { form.hidden = true; [].forEach.call(doc.querySelectorAll('.ap-demo[data-demo]'), function (x) { x.hidden = true; }); }
+    (official && !OPEN && !testMode ? Promise.reject() : fetch(OPS + '?a=status&site=' + OPS_SITE)).then(function (r) { return r.json(); }).then(function (j) {
+      if (!j.ok || j.status !== 'active') return wait(true);
+      // 이 주소에서 보낸 글을 서버가 받는지 먼저 확인한다(출처가 등록돼 있지 않으면 답을 못 받는다). 아무것도 저장하지 않는 물음.
+      return post({ a: 'applyDone', site: OPS_SITE, id: '-', key: '-' }).then(function () {
+        live = true;
+        [].forEach.call(doc.querySelectorAll('.ap-demo[data-demo]'), function (x) { x.hidden = true; });
+        if (official) { wait(false); form.hidden = false; }
+        if (testMode) doc.getElementById('apTest').hidden = false;
+      });
+    }).catch(function () { wait(true); });
     // 올릴 수 있는 파일(서버와 같은 기준): 칸 → [개수, 한 개 최대 MB]
     var EXT = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp', heic: 'image/heic', heif: 'image/heif', mp4: 'video/mp4', mov: 'video/quicktime', webm: 'video/webm', m4v: 'video/x-m4v' };
     var LIM = { intro: [1, 500], face: [1, 30], body: [1, 30], skill: [3, 500] };
@@ -324,7 +340,7 @@
     var FAIL = { busy: '지금은 접수가 몰려 있습니다. 잠시 뒤 다시 보내 주세요.', full: '지금은 파일을 받을 수 없습니다. 아래 오디션 문의 메일로 알려 주세요.', closed: '지금은 지원서를 받지 않습니다.',
       type: '사진·영상 파일 형식을 확인해 주세요.', size: '사진·영상 파일 크기를 확인해 주세요.', invalid: '적은 내용을 다시 확인해 주세요.' };
     var send = function () {
-      var data = { category: [], test: official ? 0 : 1, page: location.pathname.slice(-60) }, list = [], total = 0, sent = 0, id, key, chunk;
+      var data = { category: [], test: testMode ? 1 : 0, page: location.pathname.slice(-60) }, list = [], total = 0, sent = 0, id, key, chunk;
       ['name', 'birth', 'nationality', 'residence', 'email', 'contact', 'guardian', 'guardianContact'].forEach(function (k) { data[k] = form.elements[k].value.trim(); });
       [].forEach.call(form.querySelectorAll('[name=category]:checked'), function (c) { data.category.push(c.value); });
       var g = form.querySelector('[name=gender]:checked'); if (g) data.gender = g.value;
@@ -362,7 +378,7 @@
           if (!j.ok) throw j;
           sending = false; prog.hidden = true;
           doc.getElementById('apDoneT').textContent = '지원서를 받았습니다';
-          doc.getElementById('apDoneP').textContent = '접수 번호는 ' + j.id + '입니다. 결과는 개별로 연락드립니다.' + (official ? '' : ' 지금은 시험 운영 중이라 이 지원서는 시험용으로만 저장됩니다.');
+          doc.getElementById('apDoneP').textContent = '접수 번호는 ' + j.id + '입니다. 결과는 개별로 연락드립니다.' + (testMode ? ' 지금은 시험 운영 중이라 이 지원서는 시험용으로만 저장됩니다.' : '');
           doc.getElementById('apBack').textContent = 'JT COREA 홈으로';
           form.reset(); sync(); form.hidden = true; done.hidden = false;
           done.focus({ preventScroll: true }); done.scrollIntoView({ block: 'center' });

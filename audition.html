@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex,nofollow">
+<link rel="canonical" href="https://jtcoreaent.com/audition.html">
 <title>오디션 지원서 — JT COREA YEAR-END GLOBAL AUDITION</title>
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://kkwon91.github.io/jtcorea-demo/audition.html">
+<meta property="og:url" content="https://jtcoreaent.com/audition.html">
 <meta name="description" content="JT COREA YEAR-END GLOBAL AUDITION 지원서. 2026년 11월 16일부터 12월 31일까지, 2010~2013년생이면 성별과 국가에 상관없이 지원할 수 있습니다.">
 <meta property="og:title" content="JT COREA YEAR-END GLOBAL AUDITION 지원서">
 <meta property="og:description" content="2026.11.16 — 12.31 · 성별·국가 제한 없음 · 2010~2013년생">
-<meta property="og:image" content="https://kkwon91.github.io/jtcorea-demo/assets/video/hero_poster.jpg">
+<meta property="og:image" content="https://jtcoreaent.com/assets/video/hero_poster.jpg">
 <link rel="icon" href="assets/logo/jt_logo_c.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -42,6 +42,7 @@
 
 <!-- 접수 서버가 켜져 있으면 js 가 시안 띠를 숨기고, 공식 주소가 아닐 때는 시험 접수 띠를 보여 준다 -->
 <p class="ap-demo" data-demo><b>시안 화면</b>접수 서버를 연결하기 전이라 지원서가 아직 저장되지 않습니다. 연결되면 이 화면에서 바로 접수합니다.</p>
+<p class="ap-demo" id="apPrep" hidden><b>접수 안내</b>홈페이지 지원서는 준비 중입니다. 지금은 <a href="https://forms.gle/S8PvHGx9aQUgaBCQ9" target="_blank" rel="noopener">오디션 지원 폼</a>에서 접수합니다.</p>
 <p class="ap-demo" id="apTest" hidden><b>시험 접수</b>지금은 시험 운영 중입니다. 여기서 보낸 지원서는 시험용으로만 저장하고 실제 접수로 다루지 않습니다.</p>
 
 <section class="ap-hero">
@@ -170,6 +171,16 @@
     </div>
   </form>
 
+  <!-- 공식 주소인데 접수 서버가 아직 안 켜졌을 때: 지원서 칸 대신 이 안내만 보인다(js) -->
+  <section class="ap-done" id="apWait" hidden>
+    <img src="assets/stickers/star_yellow.png" alt="" aria-hidden="true">
+    <h2>홈페이지 지원서는 준비 중입니다</h2>
+    <p>지금은 오디션 지원 폼에서 접수합니다. 아래 버튼을 누르면 지원 폼이 새 창으로 열립니다.</p>
+    <div class="ap-done-cta">
+      <a class="btn btn--lemon" href="https://forms.gle/S8PvHGx9aQUgaBCQ9" target="_blank" rel="noopener">오디션 지원 폼 열기<i>→</i></a>
+    </div>
+  </section>
+
   <!-- 보낸 뒤 화면: 기본 글은 시안용, 실제로 접수되면 js 가 접수 번호 안내로 바꾼다 -->
   <section class="ap-done" id="apDone" tabindex="-1" hidden>
     <img src="assets/stickers/star_yellow.png" alt="" aria-hidden="true">
@@ -212,7 +223,7 @@
     </div>
     <div class="ft-bot">
       <span>COPYRIGHT © (주)제이티코리아엔터테인먼트. ALL RIGHTS RESERVED.</span>
-      <span><a href="https://jtcoreaent.com/sub/pop_privacy.php" target="_blank" rel="noopener">개인정보처리방침</a> · <a href="https://jtcoreaent.com/sub/pop_email.php" target="_blank" rel="noopener">이메일무단수집거부</a></span>
+      <span><a href="email-policy.html">이메일무단수집거부</a></span>
     </div>
   </div>
 </footer>

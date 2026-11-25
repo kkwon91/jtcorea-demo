@@ -133,3 +133,6 @@
 .ap-bar{display:block;height:10px;border:1.5px solid #fff;background:#000}
 .ap-bar i{display:block;height:100%;width:0;background:var(--lemon);transition:width .2s linear}
 .ap-send .btn[disabled]{opacity:.45;cursor:default;pointer-events:none}
+
+/* 공식 주소에서 접수 서버를 기다리는 동안: 단계 목록을 숨긴다 */
+.ap-steps[hidden]{display:none!important}
