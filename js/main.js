@@ -210,13 +210,13 @@
     var OPS = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) ? 'http://127.0.0.1:8798/' : 'https://jtops.dbartera.com/';
     var OPS_SITE = 'jtcorea';
     var official = /(^|\.)jtcoreaent\.com$/.test(location.hostname);
-    // 공식 주소에서 실제 접수를 여는 스위치. 개인정보 보관 기간·보호자 동의 방식이 정해지고 화면 문구를 채운 뒤에 true 로 바꾼다.
-    var OPEN = false;
+    // 공식 주소에서 실제 접수를 여는 스위치. 2026-11-26 사용자 지시로 켬(구글 폼 대신 이 지원서로 받는다). false 로 바꾸면 공식 주소에서 지원서 칸 대신 '열 수 없음' 안내만 보인다.
+    var OPEN = true;
     // 시험 접수: 공식 주소가 아닌 곳, 또는 공식 주소에 ?test=1 을 붙여 연 경우. 보낸 지원서는 '시험'으로 표시된다.
     var testMode = !official || /[?&]test=1(&|$)/.test(location.search);
     var live = false, sending = false;
     var post = function (o) { return fetch(OPS, { method: 'POST', headers: { 'content-type': 'text/plain' }, body: JSON.stringify(o) }).then(function (r) { return r.json(); }); };
-    // 공식 주소에서는 시안 화면을 보이지 않는다: 접수 서버가 받을 수 있으면 지원서, 아니면 '준비 중' 안내와 지원 폼 연결.
+    // 공식 주소에서는 시안 화면을 보이지 않는다: 접수 서버가 받을 수 있으면 지원서, 아니면 '지금 열 수 없음' 안내(다시 열기·문의 메일).
     var wait = function (on) {
       if (!official) return;
       [].forEach.call(doc.querySelectorAll('.ap-demo[data-demo]'), function (x) { x.hidden = true; });
