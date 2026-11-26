@@ -44,8 +44,21 @@
     <div class="ad-acts">
       <button type="button" id="adReload">새로 고침</button>
       <button type="button" id="adCsv">표로 내려받기(CSV)</button>
+      <button type="button" id="adGetAll">사진·영상 내려받기(폴더)</button>
     </div>
   </div>
+
+  <!-- 사진·영상을 지원자별 폴더로 내려받는 동안의 진행 상황 -->
+  <section class="ad-get" id="adGet" aria-label="사진·영상 내려받기" hidden>
+    <h2 id="adGetTt">사진·영상 내려받기</h2>
+    <p class="ad-get-now" id="adGetNow" aria-live="polite"></p>
+    <div class="ad-get-bar" id="adGetBarBox" hidden><i id="adGetBar"></i></div>
+    <ul class="ad-get-fail" id="adGetFail" hidden></ul>
+    <div class="ad-row">
+      <button type="button" class="ad-btn" id="adGetStop" hidden>멈추기</button>
+      <button type="button" class="ad-btn" id="adGetClose" hidden>닫기</button>
+    </div>
+  </section>
 
   <div class="ad-bar">
     <div class="ad-tabs" id="adTabs" role="group" aria-label="상태로 고르기"></div>

@@ -140,7 +140,8 @@
       row('이메일', a.email, 'mailto:' + a.email), row('연락처', a.contact), row('보호자', a.guardian), row('보호자 연락처', a.guardianContact),
       row('동의한 시각', a.agreed ? when(a.agreed, true) : '')
     ]))]));
-    det.appendChild(el('div', { class: 'ad-sec' }, [el('h3', { text: '사진과 영상' }), media]));
+    det.appendChild(el('div', { class: 'ad-sec' }, [el('h3', { text: '사진과 영상' }), media,
+      canDir ? el('div', { class: 'ad-row' }, [el('button', { type: 'button', class: 'ad-btn', text: '이 지원자 내려받기(폴더)', on: ['click', function () { start([a]); }] })]) : null]));
     det.appendChild(el('div', { class: 'ad-sec ad-memo' }, [el('h3', { text: '메모 (관리자만 봅니다)' }), memo,
       el('div', { class: 'ad-row' }, [el('button', { type: 'button', class: 'ad-btn', text: '메모 저장', on: ['click', function () {
         admin({ op: 'appMemo', id: id, memo: memo.value }).then(function (j) { saved.textContent = j.ok ? '저장했습니다' : '저장하지 못했습니다'; if (j.ok) a.memo = memo.value; });
@@ -152,7 +153,7 @@
       media.textContent = '';
       if (!j.ok) { media.appendChild(el('p', { class: 'ad-wait', text: '사진과 영상을 불러오지 못했습니다' })); return; }
       var fig = function (f, many) {
-        var u = OPS + f.url, cap = el('figcaption', {}, [FILE[f.k] + (many ? ' ' + (f.i + 1) : ''), el('span', { text: size(f.size) })]);
+        var u = OPS + f.url, cap = el('figcaption', {}, [FILE[f.k] + (many ? ' ' + (f.i + 1) : ''), el('span', {}, [size(f.size), el('a', { href: u + '&dl=1', text: '내려받기' })])]);
         if (f.type.indexOf('image/') === 0) return el('figure', { class: 'ad-media' }, [cap, el('a', { href: u, target: '_blank', rel: 'noopener' }, [el('img', { src: u, alt: FILE[f.k], loading: 'lazy' })])]);
         return el('figure', { class: 'ad-media' }, [cap, el('video', { src: u, controls: '', preload: 'metadata', playsinline: '' })]);
       };
@@ -164,20 +165,121 @@
   };
 
   // ── 표로 내려받기 ──
-  $('adCsv').addEventListener('click', function () {
-    var cols = [['at', '접수 시각'], ['id', '접수 번호'], ['name', '이름'], ['birth', '생년월일'], ['gender', '성별'], ['nationality', '국적'], ['residence', '사는 곳'], ['category', '지원 분야'], ['email', '이메일'], ['contact', '연락처'], ['guardian', '보호자'], ['guardianContact', '보호자 연락처'], ['status', '상태'], ['memo', '메모'], ['test', '시험 접수']];
+  var COLS = [['at', '접수 시각'], ['id', '접수 번호'], ['name', '이름'], ['birth', '생년월일'], ['gender', '성별'], ['nationality', '국적'], ['residence', '사는 곳'], ['category', '지원 분야'], ['email', '이메일'], ['contact', '연락처'], ['guardian', '보호자'], ['guardianContact', '보호자 연락처'], ['status', '상태'], ['memo', '메모'], ['test', '시험 접수']];
+  var shown = function (a, k) {
+    var v = a[k];
+    if (k === 'at') return when(v, true);
+    if (k === 'category') return (v || []).map(function (x) { return CAT[x] || x; }).join(' · ');
+    if (k === 'gender') return GENDER[v] || '';
+    if (k === 'test') return v ? '시험' : '';
+    return v == null ? '' : String(v);
+  };
+  var csvText = function (list) {
     var cell = function (v) { v = String(v == null ? '' : v); if (/^[=+\-@\t\r]/.test(v)) v = "'" + v; return '"' + v.replace(/"/g, '""') + '"'; };  // 표 프로그램이 수식으로 읽지 않게
-    var rows = apps.filter(match).map(function (a) {
-      return cols.map(function (c) {
-        var v = a[c[0]];
-        if (c[0] === 'at') v = when(v, true); else if (c[0] === 'category') v = (v || []).map(function (x) { return CAT[x] || x; }).join(' · '); else if (c[0] === 'gender') v = GENDER[v] || ''; else if (c[0] === 'test') v = v ? '시험' : '';
-        return cell(v);
-      }).join(',');
-    });
-    var blob = new Blob(['﻿' + cols.map(function (c) { return cell(c[1]); }).join(',') + '\n' + rows.join('\n')], { type: 'text/csv;charset=utf-8' });
+    var rows = list.map(function (a) { return COLS.map(function (c) { return cell(shown(a, c[0])); }).join(','); });
+    return '﻿' + COLS.map(function (c) { return cell(c[1]); }).join(',') + '\n' + rows.join('\n');
+  };
+  $('adCsv').addEventListener('click', function () {
+    var blob = new Blob([csvText(apps.filter(match))], { type: 'text/csv;charset=utf-8' });
     var a = el('a', { href: URL.createObjectURL(blob), download: 'jtcorea_audition_' + new Date().toISOString().slice(0, 10) + '.csv' });
     doc.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
   });
+
+  // ── 사진·영상 내려받기: 고른 폴더 안에 지원자별 폴더를 만들고 지원서 글과 사진·영상을 넣는다 ──
+  // 브라우저가 폴더에 직접 쓰는 기능(PC 크롬·엣지)을 쓴다. 파일은 다 받은 뒤에야 폴더에 나타나고, 같은 크기로 이미 있는 파일은 건너뛴다(끊겨도 같은 폴더를 다시 고르면 이어진다).
+  var job = null;
+  var FNAME = { intro: '자기소개영상', face: '정면사진', body: '전신사진', skill: '지원분야영상' };
+  var EXT = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/heic': 'heic', 'image/heif': 'heif', 'video/mp4': 'mp4', 'video/quicktime': 'mov', 'video/webm': 'webm', 'video/x-m4v': 'm4v' };
+  var safe = function (s) { return String(s == null ? '' : s).replace(/[\\\/:*?"<>|\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').replace(/^[ .]+|[ .]+$/g, '').slice(0, 60); };
+  var dirName = function (a) { return [safe(a.name) || '이름 없음', safe(a.birth), a.id].filter(Boolean).join('_') + (a.test ? '_시험' : ''); };
+  var sheet = function (a) {
+    var rows = COLS.map(function (c) { return [c[1], shown(a, c[0])]; });
+    rows.splice(12, 0, ['동의한 시각', a.agreed ? when(a.agreed, true) : '']);
+    return '﻿' + rows.filter(function (r) { return r[1]; }).map(function (r) { return r[0] + ': ' + r[1]; }).join('\r\n') + '\r\n';
+  };
+  var note = function (tt, text, fails) {   // 끝났거나 시작하지 못했을 때
+    $('adGet').hidden = false; $('adGetTt').textContent = tt; $('adGetNow').textContent = text || '';
+    $('adGetBarBox').hidden = true; $('adGetStop').hidden = true; $('adGetClose').hidden = false;
+    var ul = $('adGetFail'); ul.textContent = ''; ul.hidden = !(fails && fails.length);
+    (fails || []).forEach(function (t) { ul.appendChild(el('li', { text: t })); });
+  };
+  var writeText = async function (dir, name, text) { var w = await (await dir.getFileHandle(name, { create: true })).createWritable(); await w.write(text); await w.close(); };
+  var sizeIn = async function (dir, name) { try { return (await (await dir.getFileHandle(name)).getFile()).size; } catch (e) { return -1; } };
+  var pull = async function (dir, name, f, tick) {
+    var r = await fetch(OPS + f.url, { signal: job.ctl.signal });
+    if (!r.ok || !r.body) throw new Error('http ' + r.status);
+    var w = await (await dir.getFileHandle(name, { create: true })).createWritable(), rd = r.body.getReader(), got = 0, x;
+    try {
+      while (!(x = await rd.read()).done) { await w.write(x.value); got += x.value.length; tick(got); }
+      if (got !== f.size) throw new Error('size');
+      await w.close();
+    } catch (e) { try { await w.abort(); } catch (e2) { /* 이미 닫힘 */ } throw e; }
+  };
+  var download = async function (list, root) {
+    job = { ctl: new AbortController(), stop: false };
+    let done = 0, got = 0, skipped = 0, why = '', last = 0;
+    const fails = [];
+    $('adGetTt').textContent = '사진·영상을 내려받는 중입니다'; $('adGetFail').hidden = true; $('adGetFail').textContent = '';
+    $('adGetBarBox').hidden = false; $('adGetBar').style.width = '0%'; $('adGetStop').hidden = false; $('adGetClose').hidden = true;
+    const say = function (n, a, text, part) {
+      $('adGetNow').textContent = (n + 1) + ' / ' + list.length + '명 · ' + a.name + ' · ' + text;
+      $('adGetBar').style.width = ((n + (part || 0)) / list.length * 100).toFixed(1) + '%';
+    };
+    try {
+      if (list.length > 1) await writeText(root, '지원자 목록.csv', csvText(list));
+      for (let n = 0; n < list.length && !job.stop; n++) {
+        const a = list[n]; let j = null;
+        say(n, a, '준비하는 중');
+        try { j = await admin({ op: 'appOpen', id: a.id }); } catch (e) { if (e && e.err === 'login') { why = 'login'; break; } }
+        if (!j || !j.ok) { fails.push(a.name + ' (' + a.id + ') — 지원서를 열지 못했습니다'); continue; }
+        const dir = await root.getDirectoryHandle(dirName(a), { create: true });
+        await writeText(dir, '지원서.txt', sheet(a));
+        const total = j.files.reduce(function (s, f) { return s + f.size; }, 0) || 1;
+        const skills = j.files.filter(function (f) { return f.k === 'skill'; }).length;
+        let before = 0, bad = 0;
+        for (let i = 0; i < j.files.length && !job.stop; i++) {
+          const f = j.files[i], name = FNAME[f.k] + (f.k === 'skill' && skills > 1 ? f.i + 1 : '') + '.' + (f.ext || EXT[f.type] || 'bin'), base = before;
+          before += f.size;
+          if (await sizeIn(dir, name) === f.size) { skipped++; continue; }
+          try {
+            await pull(dir, name, f, function (b) { const t = Date.now(); if (t - last < 200) return; last = t; say(n, a, name + ' ' + Math.floor(b / (f.size || 1) * 100) + '%', (base + b) / total); });
+            got++;
+          } catch (e) {
+            if (job.stop) break;
+            if (e && e.name === 'QuotaExceededError') { why = 'full'; break; }
+            if (e && e.name === 'NotAllowedError') { why = 'perm'; break; }
+            bad++; fails.push(a.name + ' (' + a.id + ') — ' + name + ' 파일을 받지 못했습니다');
+          }
+        }
+        if (why) break;
+        if (!job.stop && !bad) done++;
+      }
+    } catch (e) { if (!why) why = e && e.name === 'NotAllowedError' ? 'perm' : e && e.name === 'QuotaExceededError' ? 'full' : 'err'; }
+    const stopped = job.stop; job = null;
+    if (why === 'login') return;   // 로그인 화면으로 돌아갔다(안내는 그 화면에 나온다)
+    const sum = '지원자 ' + done + '명 · 새로 받은 파일 ' + got + '개' + (skipped ? ' · 이미 있어 건너뛴 파일 ' + skipped + '개' : '') + '. ';
+    const again = '다시 누르고 같은 폴더를 고르면 받지 못한 파일만 이어서 받습니다.';
+    if (why === 'full') note('저장할 공간이 모자라 멈췄습니다', sum + '공간을 비우고 ' + again, fails);
+    else if (why === 'perm') note('고른 폴더에 저장할 수 없어 멈췄습니다', sum + '다른 폴더를 골라 다시 해 주세요.', fails);
+    else if (why) note('내려받는 중 문제가 생겨 멈췄습니다', sum + again, fails);
+    else if (stopped) note('내려받기를 멈췄습니다', sum + again, fails);
+    else if (fails.length) note('일부를 받지 못했습니다', sum + again, fails);
+    else note('내려받기를 마쳤습니다', sum + '고른 폴더 안에 지원자별 폴더가 있습니다.');
+  };
+  var canDir = typeof window.showDirectoryPicker === 'function';
+  var start = function (list) {
+    if (job) return;
+    if (!canDir) return note('이 브라우저에서는 폴더로 내려받을 수 없습니다', 'PC의 크롬이나 엣지에서 관리자 화면을 열면 됩니다. 이 브라우저에서는 지원서를 열어 사진·영상마다 있는 ‘내려받기’를 눌러 주세요.');
+    if (!list.length) return note('내려받을 지원서가 없습니다', '');
+    note('내려받을 폴더를 골라 주세요', '새 폴더를 하나 만들어 고르면 그 안에 지원자별 폴더가 생깁니다(' + list.length + '명). 바탕 화면·다운로드 폴더 자체는 브라우저가 막을 수 있습니다. 저장해도 되는지 물으면 허용을 눌러 주세요.');
+    window.showDirectoryPicker({ mode: 'readwrite', id: 'jtaud' }).then(function (root) { return download(list, root); }, function (e) {
+      if (e && e.name === 'AbortError') $('adGet').hidden = true; else note('폴더를 열지 못했습니다', '다른 폴더를 골라 다시 해 주세요.');
+    });
+  };
+  $('adGetAll').addEventListener('click', function () { start(apps.filter(match)); });
+  $('adGetStop').addEventListener('click', function () { if (job) { job.stop = true; job.ctl.abort(); } });
+  $('adGetClose').addEventListener('click', function () { $('adGet').hidden = true; });
+  window.addEventListener('beforeunload', function (e) { if (job) { e.preventDefault(); e.returnValue = ''; } });
 
   doc.addEventListener('keydown', function (e) { if (e.key === 'Escape' && view.open) close(); });
   if (me && me.token) { show(true); load(); } else show(false);
